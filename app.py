@@ -1,118 +1,39 @@
-# For data analysis
+# Import relevant libraries
 import pandas as pd
-
-# For model creation and performance evaluation
+import numpy as np
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import classification_report, confusion_matrix
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
-from sklearn.metrics import roc_curve, roc_auc_score
-
-# For visualizations and interactive dashboard creation
+import plotly.express as px
 import dash
 from dash import dcc, html
 from dash.dependencies import Input, Output, State
-import matplotlib.pyplot as plt
-import seaborn as sns
-import plotly.express as px
 
-import warnings
-
-warnings.filterwarnings("ignore")
-
-#Load dataset
-data = pd.read_csv('winequality-red.csv')
-
-# check for missing values
-print(data.isnull().sum())
-print('\n')
-
-# drop rows with missing values
-data.dropna(inplace=True)
-
-# Drop duplicate rows
+ # Load dataset
+data = pd.read_csv('data/winequality-red.csv')
+# Check for missing values
+data.isna().sum()
+# Remove duplicate data
 data.drop_duplicates(keep='first')
-
-# Check wine quality distribution
-plt.figure(dpi=100)
-sns.countplot(data=data, x="quality")
-plt.xlabel("Count")
-plt.ylabel("Quality Score")
-plt.show()
-
 # Calculate the correlation matrix
 corr_matrix = data.corr()
-# Plot heatmap
-plt.figure(figsize=(12, 8), dpi=100)
-sns.heatmap(corr_matrix, center=0,cmap='Purples', annot=True)
-plt.show()
-
 # Label quality into Good (1) and Bad (0)
 data['quality'] = data['quality'].apply(lambda x: 1 if x >= 6.0 else 0)
-
-# Display dataframe
-data.head(50)
-
-# Drop the target variable
+    # Drop the target variable
 X = data.drop('quality', axis=1)
 # Set the target variable as the label
 y = data['quality']
 
-# Split the data into training and testing sets (20% testing and 80% training)
+
+# Split the dat a into training and testing sets (80% training, 20% testing)
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=42)
-
-# Create an object of the logistic regression model
+# Create an instance of the logistic regression model
 logreg_model = LogisticRegression()
-
 # Fit the model to the training data
 logreg_model.fit(X_train, y_train)
 
 # Predict the labels of the test set
-y_pred = logreg_model.predict(X_test)
+# y_pred = logreg_model.predict(X_test)
 
-# Create the confusion matrix
-confusion_mat = confusion_matrix(y_test, y_pred)
-
-# plot confusion matrix using seaborn
-plt.figure(dpi=100)
-sns.heatmap(confusion_mat, annot=True, cmap='Purples', fmt='g')
-plt.xlabel('Predicted')
-plt.ylabel('Actual')
-plt.show()
-
-# Compute the accuracy of the model
-accuracy = accuracy_score(y_test, y_pred)
-
-# Compute the precision of the model
-precision = precision_score(y_test, y_pred)
-
-# Compute the recall of the model
-recall = recall_score(y_test, y_pred)
-
-# Compute the F1 score of the model
-f1 = f1_score(y_test, y_pred)
-
-# Print the evaluation metrics
-print("Accuracy:", accuracy)
-print("Precision:", precision)
-print("Recall:", recall)
-print("F1 score:", f1)
-
-# y_true and y_score are the true labels and predicted scores, respectively
-fpr, tpr, thresholds = roc_curve(y_test, y_pred)
-auc_score = roc_auc_score(y_test, y_pred)
-
-plt.figure(dpi=100)
-plt.plot(fpr, tpr, color='blue', label='ROC curve (AUC = %0.2f)' % auc_score)
-plt.plot([0, 1], [0, 1], color='red', linestyle='--')
-plt.xlabel('False Positive Rate')
-plt.ylabel('True Positive Rate')
-plt.title('Receiver Operating Characteristic (ROC) Curve')
-plt.legend(loc="lower right")
-plt.show()
-
-# Create the Dash app
-# external_stylesheets = ['https://fonts.googleapis.com/css2?family=Open+Sans&display=swap']
 
 # Create the Dash app
 app = dash.Dash(__name__)
@@ -120,7 +41,6 @@ server = app.server
 
 # Define the layout of the dashboard
 app.layout = html.Div(
-#     style={'font-family': 'Open Sans'}, 
     children=[
     
     html.H1('CO544-2023 Lab 3: Wine Quality Prediction'),
