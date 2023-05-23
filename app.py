@@ -94,7 +94,7 @@ app.layout = html.Div(
         html.Br(),
         
         html.Label("Sulphates"),
-        dcc.Input(id='sulphates', type='number', required=True), style={'padding': '10px'},
+        dcc.Input(id='sulphates', type='number', required=True, style={'padding': '10px'}),
         html.Label("Alcohol"),
         dcc.Input(id='alcohol', type='number', required=True, style={'padding': '10px'}),
         html.Br(),
